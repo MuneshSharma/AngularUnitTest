@@ -1,0 +1,55 @@
+﻿using System;
+using System.Diagnostics;
+using System.Net;
+using System.Threading;
+using System.Threading.Tasks;
+
+namespace MultiThreadingInCSharp
+{
+    class Program
+    {
+
+        static void Main(string[] args)
+        {
+            Console.WriteLine($"Main Thread : {Thread.CurrentThread.ManagedThreadId} Statred");
+
+            Task<Student> task1 = Task.Run(() => {
+
+                Student _student = new Student()
+                {
+                    Id = 1,
+                    Name = "DotNetOffice"
+                };
+                return _student;
+            });
+
+            Student info = task1.Result;
+
+            task1.Wait();
+
+            Console.WriteLine("student Id is :- " + info.Id + " And Name is " + info.Name);
+            Console.WriteLine($"Main Thread : {Thread.CurrentThread.ManagedThreadId} Completed");
+            Console.ReadKey();
+        }
+        static int Total(int Max)
+        {
+            int sum = 0;
+            Console.WriteLine($"Child Thread : {Thread.CurrentThread.ManagedThreadId} Started");
+            for (int count = 1; count <= Max; count++)
+            {
+                sum = sum + count;
+            }
+            Console.WriteLine($"Child Thread : {Thread.CurrentThread.ManagedThreadId} Completed");
+            return sum;
+        }
+
+
+
+    }
+
+    public class Student
+    {
+        public int Id { get; set; }
+        public string  Name { get; set; }
+    }
+}

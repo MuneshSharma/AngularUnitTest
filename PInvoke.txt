@@ -1,0 +1,48 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
+using System.Net;
+using System.Threading;
+using System.Threading.Tasks;
+
+namespace MultiThreadingInCSharp
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            Console.WriteLine($"Main Thread : {Thread.CurrentThread.ManagedThreadId} Started");
+            var option = new ParallelOptions
+            {
+              MaxDegreeOfParallelism = 3
+            };
+
+            Parallel.Invoke(
+                () => PrintNum(1),
+                  () => PrintNum(1),
+                  delegate ()
+                  {
+                      Console.WriteLine($"Anonymous method and  Thread : {Thread.CurrentThread.ManagedThreadId} Started");
+                  },
+
+                  () =>
+                  {
+                      Console.WriteLine($"lembda method and  Thread : {Thread.CurrentThread.ManagedThreadId} Started");
+                  }
+                );
+
+
+            Console.WriteLine($"Main Thread : {Thread.CurrentThread.ManagedThreadId} Completed");
+            Console.ReadLine();
+        }
+
+        static void PrintNum(int num)
+        {
+            Console.WriteLine($"the num is {num} and  Thread : {Thread.CurrentThread.ManagedThreadId} Started");
+            Thread.Sleep(10);
+        }
+
+    }
+
+}

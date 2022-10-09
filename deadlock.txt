@@ -1,0 +1,91 @@
+﻿using System;
+using System.Diagnostics;
+using System.Threading;
+
+namespace MultiThreadingInCSharp
+{
+    class Program
+    {
+
+        static void Main(string[] args)
+        {
+            Console.WriteLine("Main method Started");
+
+            ATMDetails details1 = new ATMDetails(501, 5000);
+            ATMDetails details2 = new ATMDetails(502, 6000);
+
+            ATMSystem system1 = new ATMSystem(details1, details2, 500);
+            Thread T1 = new Thread(system1.Transfer);
+            T1.Name = "T1";
+
+            ATMSystem system2 = new ATMSystem(details2, details1, 1000);
+            Thread T2 = new Thread(system2.Transfer);
+            T2.Name = "T2";
+
+            T1.Start();
+            T2.Start();
+
+            T1.Join();
+            T2.Join();
+            Console.WriteLine("Main method Completed");
+        }
+
+        public class ATMDetails
+        {
+            double _balance;
+            int _id;
+            public ATMDetails(int id, double balance)
+            {
+                this._id = id;
+                this._balance = balance;
+            }
+            public int ID
+            {
+                get
+                {
+                    return _id;
+                }
+            }
+            public void Withdraw(double amount)
+            {
+                _balance -= amount;
+            }
+            public void Deposit(double amount)
+            {
+                _balance += amount;
+            }
+        }
+
+        public class ATMSystem
+        {
+            ATMDetails _fromAtm;
+            ATMDetails _toAtm;
+            double _amountToTransfer;
+            public ATMSystem(ATMDetails fromAtm,
+                ATMDetails toAtm, double amountToTransfer)
+            {
+                this._fromAtm = fromAtm;
+                this._toAtm = toAtm;
+                this._amountToTransfer = amountToTransfer;
+            }
+            public void Transfer()
+            {
+                Console.WriteLine(Thread.CurrentThread.Name + "Thraad trying to access locking" + _fromAtm.ID.ToString());
+                lock (_fromAtm)
+                {
+                    Console.WriteLine(Thread.CurrentThread.Name + "Thraad trying to sleep for 1 min" + _fromAtm.ID.ToString());
+                    Thread.Sleep(1000);
+                    Console.WriteLine(Thread.CurrentThread.Name + "Thraad awake from sleep and trying to aceess to lock" + _toAtm.ID.ToString() );
+                    lock (_toAtm)
+                    {
+                        Console.WriteLine("The main logic for trnasfer is started");
+                        _fromAtm.Withdraw(_amountToTransfer);
+                        _toAtm.Deposit(_amountToTransfer);
+                    }
+                }
+            }
+        }
+    }
+
+
+}

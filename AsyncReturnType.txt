@@ -1,0 +1,44 @@
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+
+namespace AsynchronousProgrammingInCsharp
+{
+    public partial class Form2 : Form
+    {
+        public Form2()
+        {
+            InitializeComponent();
+        }
+
+        private async void button1_Click(object sender, EventArgs e)
+        {
+            listBox1.Items.Add("this is task generic return type");
+           await CallProcess();
+            listBox1.Items.Add("Button operation is completed");
+        }
+
+        public async Task CallProcess()
+        {
+            string val = await Processing();
+            this.listBox1.Items.Add(val);
+            this.listBox1.Items.Add("CallProcess Process finish");
+        }
+
+        public static Task<string> Processing()
+        {
+            return Task.Run(() =>
+            {
+                System.Threading.Thread.Sleep(5000);
+                return " Task With String return type executing";
+            });
+        }
+
+    }
+}

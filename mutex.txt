@@ -1,0 +1,37 @@
+﻿using System;
+using System.Diagnostics;
+using System.Threading;
+
+namespace MultiThreadingInCSharp
+{
+    class Program
+    {
+      static  Mutex _event = new Mutex();
+        static void Main(string[] args)
+        {
+            for (int i = 0; i < 5; i++)
+            {
+                new Thread(Write).Start();
+            }
+
+            Thread.Sleep(4000);
+            _event.ReleaseMutex();
+            Console.ReadLine();
+        }
+
+        public static void Write()
+        {
+            Console.WriteLine( Thread.CurrentThread.ManagedThreadId+ "Write Thread Waiting");
+            _event.WaitOne();
+            Console.WriteLine(Thread.CurrentThread.ManagedThreadId + "Write Thread Working");
+           
+            Thread.Sleep(5000);
+            Console.WriteLine(Thread.CurrentThread.ManagedThreadId +  "Write Thread Completed");
+
+            _event.ReleaseMutex();
+        }
+
+    }
+
+
+}
